@@ -1,6 +1,5 @@
 # NetBeans / Java build outputs
 build/
-dist/
 nbproject/private/
 *.class
 
