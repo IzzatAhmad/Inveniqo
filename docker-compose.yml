@@ -1,0 +1,54 @@
+
+services:
+
+  # ── MySQL / MariaDB database ─────────────────────────────────────────────────
+  db:
+    image: mysql:8.0
+    container_name: inveniqo_db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ""          # empty root password (matches DBConnection.java)
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+      MYSQL_DATABASE: inveniqo
+    volumes:
+      # Seed the database with the full schema + data on first start
+      - ./inveniqo.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+      # Optional migration patch
+      - ./db_migration.sql:/docker-entrypoint-initdb.d/02-migration.sql:ro
+      # Persist data across container restarts
+      - inveniqo_db_data:/var/lib/mysql
+    ports:
+      - "3306:3306"            # expose for local DB tools (e.g. DBeaver, TablePlus)
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  # ── Tomcat application server ────────────────────────────────────────────────
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: inveniqo_app
+    restart: unless-stopped
+    ports:
+      - "8080:8080"            # http://localhost:8080
+    environment:
+      # Override DB host so the app reaches the 'db' service instead of localhost
+      DB_HOST: db
+      DB_PORT: "3306"
+      DB_NAME: inveniqo
+      DB_USER: root
+      DB_PASS: ""
+      JAVA_OPTS: "-Xms256m -Xmx512m"
+    depends_on:
+      db:
+        condition: service_healthy   # wait for MySQL to be ready before starting Tomcat
+    volumes:
+      # Persist uploaded files (product images, etc.) across restarts
+      - inveniqo_uploads:/usr/local/tomcat/webapps/ROOT/uploads
+
+volumes:
+  inveniqo_db_data:
+  inveniqo_uploads:

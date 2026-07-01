@@ -1,0 +1,17 @@
+# Keep the Docker build context small — only the WAR is needed
+nbproject/
+src/
+test/
+build/
+web/
+
+# IDE / OS artefacts
+.idea/
+*.iml
+*.DS_Store
+Thumbs.db
+
+# Keep these (needed by Docker build):
+# dist/Inveniqo.war
+# inveniqo.sql
+# db_migration.sql
