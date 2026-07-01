@@ -18,7 +18,7 @@ public class DBConnection {
         String port = System.getenv("DB_PORT") != null ? System.getenv("DB_PORT") : "3306";
         String name = System.getenv("DB_NAME") != null ? System.getenv("DB_NAME") : "inveniqo";
         String user = System.getenv("DB_USER") != null ? System.getenv("DB_USER") : "root";
-        String pass = System.getenv("DB_PASS") != null ? System.getenv("DB_PASS") : "";
+        String pass = System.getenv("DB_PASS") != null ? System.getenv("DB_PASS") : "admin";
 
         String url = "jdbc:mysql://" + host + ":" + port + "/" + name
                    + "?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC";
