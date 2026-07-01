@@ -11,7 +11,6 @@ web/
 *.DS_Store
 Thumbs.db
 
-# Keep these (needed by Docker build):
-# dist/Inveniqo.war
-# inveniqo.sql
-# db_migration.sql
+# Explicitly un-ignore dist/ in case it was ignored by .gitignore
+!dist/
+!dist/Inveniqo.war
